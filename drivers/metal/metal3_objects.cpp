@@ -429,6 +429,14 @@ void MDCommandBuffer::bind_pipeline(RDD::PipelineID p_pipeline) {
 			binding_cache.clear();
 			compute.mark_uniforms_dirty();
 			compute.pipeline = (MDComputePipeline *)p;
+
+			const MetalPushConstantBinding &shader_binding = compute.pipeline->shader->push_constants.stage_binding;
+			if (shader_binding.value != push_constant_binding.value) {
+				compute.dirty.clear_flag(ComputeState::DIRTY_PUSH);
+				if (!shader_binding.is_valid()) {
+					push_constant_binding = MetalPushConstantBinding();
+				}
+			}
 		}
 	}
 }
